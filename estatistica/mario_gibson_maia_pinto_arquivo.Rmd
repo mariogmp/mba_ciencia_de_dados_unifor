@@ -1,0 +1,186 @@
+---
+title: "Dashboard ENADE 2017"
+subtitle: "Curso de Computação (Bacharelado)"
+author: "Mario Gibson Maia Pinto"
+date: "09/06/2020"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+
+library(readr)
+library(ggplot2)
+library(plotly)
+library(e1071)
+require(dplyr)
+require(Hmisc)
+require(gridExtra)
+require(knitr)
+require(flexdashboard)
+require(shiny)
+require(DescTools)
+require(knitr)
+
+```
+
+```{r message=FALSE, echo=FALSE}
+
+setwd("C:\\Estatistica")
+enade2017 = read_csv2("MICRODADOS_ENADE_2017.txt")
+
+enade2017_filtrados = enade2017 %>% dplyr::select(NT_OBJ_FG, CO_GRUPO, CO_REGIAO_CURSO, QE_I02, CO_TURNO_GRADUACAO)
+
+enade2017_computacao_bacharelado = enade2017_filtrados %>% filter(CO_GRUPO == 4004)
+
+# Renomeando variável NT_OBG_FG (Nota)
+names(enade2017_computacao_bacharelado)[1] = "NOTA"
+
+# Transformando variável CO_REGIAO_CURSO (Região)
+enade2017_computacao_bacharelado = enade2017_computacao_bacharelado %>% mutate(REGIAO = case_when(
+  CO_REGIAO_CURSO == "1" ~ "Norte", 
+  CO_REGIAO_CURSO == "2" ~ "Nordeste", 
+  CO_REGIAO_CURSO == "3" ~ "Sudeste", 
+  CO_REGIAO_CURSO == "4" ~ "Sul", 
+  CO_REGIAO_CURSO == "5" ~ "Centro-Oeste"
+))
+
+# Transformando variável QE_I02 (Raça)
+enade2017_computacao_bacharelado = enade2017_computacao_bacharelado %>% mutate(RACA = case_when(
+  QE_I02 == "A" ~ "Branca", 
+  QE_I02 == "B" ~ "Preta", 
+  QE_I02 == "C" ~ "Amarela", 
+  QE_I02 == "D" ~ "Parda", 
+  QE_I02 == "E" ~ "Indígena",
+  QE_I02 == "F" ~ "Não quero declarar"
+))
+
+# Transformando variável CO_TURNO_GRADUACAO (Turno)
+enade2017_computacao_bacharelado = enade2017_computacao_bacharelado %>% mutate(TURNO = case_when(
+  CO_TURNO_GRADUACAO == "1" ~ "Matutino", 
+  CO_TURNO_GRADUACAO == "2" ~ "Vespertino", 
+  CO_TURNO_GRADUACAO == "3" ~ "Integral", 
+  CO_TURNO_GRADUACAO == "4" ~ "Noturno"
+))
+
+# Removendo as variáveis transformadas
+enade2017_computacao_bacharelado = subset(enade2017_computacao_bacharelado, select = -c(CO_REGIAO_CURSO, QE_I02, CO_TURNO_GRADUACAO))
+
+# Retirando os NA's
+enade2017_computacao_bacharelado_sem_na = enade2017_computacao_bacharelado %>% na.omit()
+
+# Médias por Turno e Região
+medias = enade2017_computacao_bacharelado_sem_na %>% 
+        select(NOTA, REGIAO, TURNO) %>% 
+             group_by(REGIAO, TURNO) %>% 
+             summarise(MEDIA = mean(NOTA))
+
+# Médias por Região
+media_por_regiao = medias %>% 
+        select(MEDIA, REGIAO) %>% 
+             group_by(REGIAO) %>% 
+             summarise(MEDIA = mean(MEDIA))
+
+# Médias por Turno
+media_por_turno = medias %>% 
+        select(MEDIA, TURNO) %>% 
+             group_by(TURNO) %>% 
+             summarise(MEDIA = mean(MEDIA))
+
+
+```
+
+Row {data-width=100 .sidebar}
+---
+```{r}
+
+selectInput("regiao_id",
+            label="Escolha a região:",
+            choices=c("Norte","Nordeste","Sudeste","Sul","Centro-Oeste"),
+            selected = c("Norte","Nordeste","Sudeste","Sul","Centro-Oeste"),
+            multiple=TRUE)
+
+selectInput("turno_id",
+            label="Escolha o turno:",
+            choices=c("Matutino","Vespertino","Integral","Noturno"),
+            selected =c("Matutino","Vespertino","Integral","Noturno"),
+            multiple=TRUE)
+
+```
+
+Row {data-width=50}
+-----------------------------------------------------------------------
+
+### Total de Alunos
+```{r}
+valueBox(prettyNum(length(enade2017_computacao_bacharelado_sem_na$NOTA), big.mark = '.'),icon = "fa-pencil")
+```
+
+### Nota - Mínima
+```{r}
+valueBox(prettyNum(min(enade2017_computacao_bacharelado_sem_na$NOTA), big.mark = ','),icon = "fa-pencil")
+```
+
+### Nota - Máxima
+```{r}
+valueBox(prettyNum(max(enade2017_computacao_bacharelado_sem_na$NOTA), big.mark = ','),icon = "fa-pencil")
+```
+
+### Nota - Média
+```{r}
+valueBox(prettyNum(round(median(enade2017_computacao_bacharelado_sem_na$NOTA),2), big.mark = ','),icon = "fa-pencil")
+```
+
+### Nota - Mediana
+```{r}
+valueBox(prettyNum(round(mean(enade2017_computacao_bacharelado_sem_na$NOTA),2), big.mark = ','),icon = "fa-pencil")
+```
+
+### Nota - Moda
+```{r}
+valueBox(prettyNum(Mode(enade2017_computacao_bacharelado_sem_na$NOTA), big.mark = ','),icon = "fa-pencil")
+```
+
+Column {data-width=350}
+---
+
+### Frequência de Notas
+
+```{r}
+
+renderPlot ({
+  
+  enade2017_computacao_bacharelado_sem_na %>% 
+  filter(REGIAO %in% input$regiao_id) %>%  
+  filter(TURNO %in% input$turno_id) %>%  
+  ggplot(aes(NOTA, fill=REGIAO)) + 
+  geom_histogram()+
+  xlab("Notas") +
+  ylab("Frequência") +
+  facet_grid(~TURNO)  
+  
+})
+
+```
+
+### Gráfico BoxPlot de Notas
+```{r}
+
+renderPlot ({
+  
+  enade2017_computacao_bacharelado_sem_na %>% 
+  filter(REGIAO %in% input$regiao_id) %>% 
+  filter(TURNO %in% input$turno_id) %>%  
+  ggplot(aes(x=REGIAO,y=NOTA, fill=REGIAO)) + 
+  geom_boxplot() +
+  ylab("Notas") +
+  facet_grid(~TURNO)
+  
+})
+
+```
+
+

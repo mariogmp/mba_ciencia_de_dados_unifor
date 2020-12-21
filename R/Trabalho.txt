@@ -1,0 +1,43 @@
+luciano.gallegos@unifor.br
+
+1) Descricão dos gráficos e do script no corpo do e-mail
+2) Anexar: script em R, e os gráficos
+
+Até dia 27/04 (adiado para o dia 04/05)
+
+Seguem abaixo as descrições dos gráficos produzidos:
+
+Gráfico 01 - Casos de Covid-19 no CE por 100k habitantes
+
+Exibe por ordem de resultados as cidades do Ceará com maior número de casos proporcionais ao número de habitantes, referente à posição mais atual dos dados fornecidos (16/04/2020).
+O gráfico exibe a capital em primeiro lugar seguida de Eusébio, Maracanaú, Caucaia e Horizonte (cidades pertencentes à região metropolitana de Fortaleza). Deste gráfico pode-se deduzir que a contaminação no estado parte de Fortaleza para cidades adjacentes.
+
+Gráfico 02 - Evolução de casos de Covid-19 - CE
+
+Exibe a evolução da quantidade de casos da doença no Ceará. O gráfico exibe um crescimento exponencial da quantidade de casos.
+
+Gráfico 03 - Evolução de Mortes por Covid-19 - CE
+
+Exibe a evolução da quantidade de mortos por Covid-19 no Ceará. O gráfico exibe um crescimento exponencial do número de vítimas.
+
+Gráfico 04 - Comparativo Doentes X Mortos por Covid-19 - CE
+
+Exibe o cruzamento de dados dos dois gráficos anteriores e possibilita uma melhor visualização sobre a proporção de vítimas da doença.
+
+Gráfico 05 - Taxa de Letalidade por Covid-19 - CE
+
+Exibe a taxa de letalidade (número de mortos dividido pelo número de doentes) por Covid-19 no Ceará. O gráfico exibe um crescimento deste percentual.
+
+Gráfico 06 - Taxa de Crescimento de Novos Casos de Covid-19 - CE
+
+Exibe o percentual de crescimento (novos casos divididos pela quantidade de casos até o dia anterior) de Covid-19 no Ceará. O gráfico exibe uma estabilidade do crescimento da doença a partir do dia 09/04.
+
+Gráfico 07 - Mortes por Covid-19 X Casos Notificados nos Cartórios - CE
+
+Compara a quantidade de mortes pela doença com os notificados em cartórios do Ceará. No gráfico é notória a grande de dias exibindo não-notificações da causa por Covid-19 nos cartórios.
+
+Gráfico 08 - Mortes por Causas Respiratórias em 2019 e 2020 X Crescimento do Covid-19 - CE
+
+Compara a quantidade de mortes por causas respiratórias (Exceto Covid-19) nos mesmos dias dos anos de 2019 e 2020 e exibe o crescimento de notificações de mortes por Covid-19 no ano de 2020. 
+O objetivo do gráfico é investigar uma possível anormalidade no registro de mortes por causas respiratórias (em comparação ao ano passado) em função do registro por Covid-19 (Mortes de outras causas respiratórias estariam sendo notificadas como Covid-19?). 
+No gráfico é notória uma diminuição de mortes por causas respiratórias em relação ao ano passado mas não é possível concluir que isso significa mortes por Covid-19 registradas erroneamente (Nos últimos dias é possível visualizar uma diminuição dessas mortes neste ano, porém, sem um aumento das registros por Covid-19).
